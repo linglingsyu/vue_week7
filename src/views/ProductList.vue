@@ -3,6 +3,10 @@
     <isLoading :active="isLoading" />
     <vToast status="true" errorMessage="錯誤訊息"></vToast>
     <div class="container">
+      <div class="d-fle align-items-center">
+        <h1 class="mb-4">產品列表</h1>
+        <button type="button" class="btn btn-primary">新增產品</button>
+      </div>
       <table>
         <thead>
           <tr>
@@ -43,14 +47,18 @@
     </div>
   </div>
   <div class="position-relative"></div>
+  <vModal></vModal>
 </template>
 <script>
 import { mapActions, mapState } from 'pinia'
 import productStore from '@/store/ProductStore.js'
-
+import vModal from '@/components/Modal.vue'
 export default {
   mounted() {
     this.getProductList()
+  },
+  components: {
+    vModal
   },
   methods: {
     ...mapActions(productStore, ['getProductList'])
