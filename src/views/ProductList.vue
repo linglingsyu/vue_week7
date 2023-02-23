@@ -53,18 +53,18 @@
     </div>
   </div>
   <div class="position-relative"></div>
-  <vModal ref="Addmodal"></vModal>
+  <productModal ref="Addmodal"></productModal>
 </template>
 <script>
 import { mapActions, mapState } from 'pinia'
 import productStore from '@/store/ProductStore.js'
-import vModal from '@/components/Modal.vue'
+import productModal from '@/components/productModal.vue'
 export default {
   mounted() {
     this.getProductList()
   },
   components: {
-    vModal
+    productModal
   },
   methods: {
     ...mapActions(productStore, ['getProductList'])
