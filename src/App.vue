@@ -1,15 +1,21 @@
 <template>
-  <vHeader></vHeader>
+  <vHeader v-if="isLogin"></vHeader>
   <div class="py-3">
     <router-view :key="$route.fullPath"></router-view>
   </div>
 </template>
 
 <script>
+import { mapState } from 'pinia'
+import AuthStore from '@/store/AuthStore.js'
 import vHeader from '@/components/Header.vue'
+
 export default {
   components: {
     vHeader
+  },
+  computed: {
+    ...mapState(AuthStore, ['isLogin'])
   }
 }
 </script>

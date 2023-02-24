@@ -30,14 +30,6 @@ const routes = [
     path: '/login',
     name: 'login',
     component: () => import('@/views/LoginView.vue')
-  },
-  {
-    path: '/admin',
-    name: 'Admin',
-    component: () => import('../views/admin/IndexView.vue'),
-    meta: {
-      requiresAuth: true
-    }
   }
 ]
 
@@ -49,11 +41,9 @@ const router = createRouter({
 
 router.beforeEach(async (to, from) => {
   const store = AuthStore()
-
-  if (to.meta.requiresAuth && to.name !== 'login') {
-    // 检查用户是否已登录
+  if (to.name !== 'login') {
+    console.log(store.isLogin)
     store.checkLogin()
-    // return { name: 'login' }
   }
 })
 

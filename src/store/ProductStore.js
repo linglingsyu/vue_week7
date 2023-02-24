@@ -67,12 +67,29 @@ export default defineStore('productStore', {
         const path = `/api/${api_path}/admin/product/${id}`
         const res = await API.delete(path)
         delete this.productList[id]
-        this.Loading = false
         return res
       } catch (error) {
-        this.Loading = false
         console.dir(error)
         alert('error!')
+      } finally {
+        this.Loading = false
+      }
+    },
+    async upload(formdata) {
+      try {
+        this.Loading = true
+        const path = `/api/${api_path}/admin/upload`
+        const res = await API.post(path, formdata, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        })
+        return res
+      } catch (error) {
+        console.dir(error)
+        alert('upload fail!')
+      } finally {
+        this.Loading = false
       }
     }
   }

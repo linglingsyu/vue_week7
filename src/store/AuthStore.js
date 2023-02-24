@@ -2,7 +2,9 @@ import { defineStore } from 'pinia'
 import { API } from '@/helper/api.js'
 
 export default defineStore('authStore', {
-  state: () => ({}),
+  state: () => ({
+    isLogin: false
+  }),
   getters: {},
   actions: {
     async login(data) {
@@ -11,8 +13,7 @@ export default defineStore('authStore', {
         const res = await API.post('admin/signin', data)
         const { token, expired } = res.data
         await this.setCookie(token, expired)
-        location.href = '/vue_week6/#/admin'
-        // this.router.push({ name: 'Admin' })
+        this.router.push({ name: 'Home' })
       } catch (error) {
         alert('登入失敗')
         console.dir(error)
@@ -24,9 +25,11 @@ export default defineStore('authStore', {
     async checkLogin() {
       try {
         const res = await API.post('api/user/check')
+        this.isLogin = res.data.success
         return res.data.success
       } catch (error) {
         console.dir(error)
+        this.isLogin = false
         this.router.push({ name: 'login' })
         return false
       }

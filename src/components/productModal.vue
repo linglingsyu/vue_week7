@@ -19,7 +19,7 @@
                 type="text"
                 class="form-control"
                 id="title"
-                v-model="product.title"
+                v-model.trim="product.title"
               />
             </div>
             <div class="col-md-6">
@@ -28,7 +28,7 @@
                 type="text"
                 class="form-control"
                 id="category"
-                v-model="product.category"
+                v-model.trim="product.category"
               />
             </div>
             <div class="col-md-6">
@@ -38,7 +38,7 @@
                 class="form-control"
                 id="unit"
                 placeholder="組/個"
-                v-model="product.unit"
+                v-model.trim="product.unit"
               />
             </div>
             <div class="col-md-6">
@@ -48,7 +48,7 @@
                 min="0"
                 class="form-control"
                 id="price"
-                v-model="product.price"
+                v-model.number="product.price"
               />
             </div>
             <div class="col-md-6">
@@ -57,7 +57,7 @@
                 type="number"
                 class="form-control"
                 id="origin_price"
-                v-model="product.origin_price"
+                v-model.number="product.origin_price"
               />
             </div>
             <div class="col-12">
@@ -66,7 +66,7 @@
                 type="text"
                 class="form-control"
                 id="description"
-                v-model="product.description"
+                v-model.trim="product.description"
               />
             </div>
             <div class="col-md-12">
@@ -74,7 +74,7 @@
               <textarea
                 class="form-control"
                 id="content"
-                v-model="product.content"
+                v-model.trim="product.content"
               ></textarea>
             </div>
             <div class="col-md-12">
@@ -84,7 +84,15 @@
                   >*僅能上傳一張(限jpg/png檔)</span
                 ></label
               >
-              <input class="form-control" type="file" id="image" />
+              <input
+                class="form-control"
+                type="file"
+                id="image"
+                @change="fileChange"
+              />
+              <div v-if="product.imageUrl">
+                <img :src="product.imageUrl" width="150" alt="" />
+              </div>
             </div>
             <div class="col-md-12">
               <label for="images" class="form-label"
@@ -92,6 +100,14 @@
                 <span class="text-muted">*可上傳多張(限jpg/png檔)</span></label
               >
               <input class="form-control" type="file" id="images" />
+              <div v-if="product.imagesUrl">
+                <img
+                  :src="img"
+                  alt=""
+                  v-for="(img, index) in product.imagesUrl"
+                  :key="`image${index}`"
+                />
+              </div>
             </div>
             <div class="col-12">
               <div class="form-check">
@@ -109,6 +125,7 @@
           </form>
         </div>
         <div class="modal-footer">
+          {{ image }}
           <button
             type="button"
             class="btn btn-secondary"
@@ -124,6 +141,8 @@
 </template>
 
 <script>
+import { mapActions } from 'pinia'
+import productStore from '@/store/productStore.js'
 import { Modal } from 'bootstrap'
 export default {
   name: 'productModal',
@@ -138,6 +157,8 @@ export default {
         origin_price: '',
         description: '',
         content: '',
+        imageUrl: '',
+        imagesUrl: [],
         is_enabled: true
       },
       image: '',
@@ -150,8 +171,32 @@ export default {
     this.modal = new Modal(modal)
   },
   methods: {
+    ...mapActions(productStore, ['upload']),
     show() {
       this.modal.show()
+    },
+    async fileChange(e) {
+      this.image = e.target.files[0]
+      if (!this.image) return false
+      const formData = new FormData()
+      formData.append('file-to-upload', this.image)
+      const res = await this.upload(formData)
+      if (res.data?.success) {
+        this.product.imageUrl = res.data.imageUrl
+      } else {
+        alert(res.data.message)
+      }
+    },
+    async uploadImage() {
+      if (!this.image) return false
+      const formData = new FormData()
+      formData.append('file-to-upload', this.file)
+      const res = await this.upload(formData)
+      if (res.data.success) {
+        this.product.imageUrl = res.data.imageUrl
+      } else {
+        alert(res.data.message)
+      }
     }
   },
   watch: {
