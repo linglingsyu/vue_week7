@@ -22,7 +22,7 @@
                 v-model.trim="product.title"
               />
             </div>
-            <div class="col-md-6">
+            <div class="col-md-3">
               <label for="category" class="form-label">產品分類</label>
               <input
                 type="text"
@@ -31,7 +31,7 @@
                 v-model.trim="product.category"
               />
             </div>
-            <div class="col-md-6">
+            <div class="col-md-3">
               <label for="unit" class="form-label">單位</label>
               <input
                 type="text"
@@ -41,7 +41,7 @@
                 v-model.trim="product.unit"
               />
             </div>
-            <div class="col-md-6">
+            <div class="col-md-3">
               <label for="price" class="form-label">產品價錢</label>
               <input
                 type="number"
@@ -51,7 +51,7 @@
                 v-model.number="product.price"
               />
             </div>
-            <div class="col-md-6">
+            <div class="col-md-3">
               <label for="origin_price" class="form-label">產品原價</label>
               <input
                 type="number"
@@ -79,10 +79,7 @@
             </div>
             <div class="col-md-12">
               <label for="image" class="form-label"
-                >產品主圖
-                <span class="text-muted"
-                  >*僅能上傳一張(限jpg/png檔)</span
-                ></label
+                >產品主圖 <span class="text-muted">(限jpg/png檔)</span></label
               >
               <input
                 class="form-control"
@@ -90,23 +87,47 @@
                 id="image"
                 @change="fileChange"
               />
+
+              <input
+                type="text"
+                class="form-control my-3"
+                id="imageUrl"
+                v-model.trim="product.imageUrl"
+                ref="image"
+              />
               <div v-if="product.imageUrl">
                 <img :src="product.imageUrl" width="150" alt="" />
               </div>
             </div>
             <div class="col-md-12">
               <label for="images" class="form-label"
-                >產品圖片
-                <span class="text-muted">*可上傳多張(限jpg/png檔)</span></label
+                >產品圖片 <span class="text-muted">(限jpg/png檔)</span></label
               >
-              <input class="form-control" type="file" id="images" />
-              <div v-if="product.imagesUrl">
-                <img
-                  :src="img"
-                  alt=""
-                  v-for="(img, index) in product.imagesUrl"
-                  :key="`image${index}`"
+              <input
+                class="form-control"
+                @change="fileChange"
+                type="file"
+                id="images"
+                ref="images"
+              />
+              <div
+                class="my-3 d-flex gap-3 align-items-center"
+                v-for="(img, index) in product.imagesUrl"
+                :key="`image${index}`"
+              >
+                <img :src="img" width="150" alt="" />
+                <input
+                  type="text"
+                  class="form-control my-3"
+                  v-model.trim="product.imagesUrl"
                 />
+                <button
+                  type="button"
+                  class="btn btn-danger"
+                  @click="removeImages(index)"
+                >
+                  X
+                </button>
               </div>
             </div>
             <div class="col-12">
@@ -125,7 +146,6 @@
           </form>
         </div>
         <div class="modal-footer">
-          {{ image }}
           <button
             type="button"
             class="btn btn-secondary"
@@ -133,7 +153,9 @@
           >
             關閉
           </button>
-          <button type="button" class="btn btn-primary">儲存</button>
+          <button type="button" class="btn btn-primary" @click="submit">
+            儲存
+          </button>
         </div>
       </div>
     </div>
@@ -165,13 +187,12 @@ export default {
       imagesUrl: []
     }
   },
-  props: ['productData'],
   mounted() {
     const modal = this.$refs.modal
     this.modal = new Modal(modal)
   },
   methods: {
-    ...mapActions(productStore, ['upload']),
+    ...mapActions(productStore, ['upload', 'updateProduct']),
     show() {
       this.modal.show()
     },
@@ -182,26 +203,23 @@ export default {
       formData.append('file-to-upload', this.image)
       const res = await this.upload(formData)
       if (res.data?.success) {
-        this.product.imageUrl = res.data.imageUrl
+        if (e.target.id === 'images') {
+          this.product.imagesUrl.push(res.data.imageUrl)
+          this.$refs.images.value = ''
+        } else {
+          this.product.imageUrl = res.data.imageUrl
+          this.$refs.image.value = ''
+        }
       } else {
         alert(res.data.message)
       }
     },
-    async uploadImage() {
-      if (!this.image) return false
-      const formData = new FormData()
-      formData.append('file-to-upload', this.file)
-      const res = await this.upload(formData)
-      if (res.data.success) {
-        this.product.imageUrl = res.data.imageUrl
-      } else {
-        alert(res.data.message)
-      }
-    }
-  },
-  watch: {
-    productData() {
-      this.product = this.productData
+    removeImages(index) {
+      this.product.imagesUrl.splice(index, 1)
+    },
+    submit() {
+      const data = this.product
+      this.updateProduct('add', data)
     }
   }
 }

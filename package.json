@@ -18,6 +18,7 @@
     "eslint-plugin-n": "^15.6.1",
     "eslint-plugin-promise": "^6.1.1",
     "pinia": "^2.0.30",
+    "sweetalert2": "^11.7.2",
     "vee-validate": "^4.7.4",
     "vue": "^3.2.45",
     "vue-loading-overlay": "^6.0.3",

@@ -11,7 +11,7 @@ export default defineStore('productStore', {
     async getProductList() {
       try {
         this.Loading = true
-        const path = `api/${api_path}/products/all`
+        const path = `/api/${api_path}/admin/products`
         const res = await API.get(path)
         this.productList = res.data.products
         this.Loading = false

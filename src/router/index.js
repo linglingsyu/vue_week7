@@ -12,6 +12,11 @@ const routes = [
     component: () => import('@/views/ProductList.vue')
   },
   {
+    path: '/products/:page',
+    name: 'ProductsPage',
+    component: () => import('@/views/ProductList.vue')
+  },
+  {
     path: '/product/:id',
     name: 'Product',
     component: () => import('@/views/ProductView.vue')
@@ -42,7 +47,6 @@ const router = createRouter({
 router.beforeEach(async (to, from) => {
   const store = AuthStore()
   if (to.name !== 'login') {
-    console.log(store.isLogin)
     store.checkLogin()
   }
 })
