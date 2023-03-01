@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <h1>編輯產品</h1>
-    <form class="row g-3">
+    <form class="row g-3" @submit.prevent="submit">
       <div class="col-12">
         <label for="title" class="form-label">產品名稱</label>
         <input
@@ -126,12 +126,17 @@
             type="checkbox"
             id="is_enabled"
             v-model="product.is_enabled"
+            :true-value="1"
+            :false-value="0"
           />
           <label class="form-check-label" for="is_enabled"> 是否啟用 </label>
         </div>
       </div>
+      <div>
+        <button type="submit" class="btn btn-primary">更新</button>
+      </div>
     </form>
-    {{ product }}
+    {{ productData }}
   </div>
 </template>
 
@@ -141,7 +146,8 @@ import productStore from '@/store/productStore.js'
 export default {
   data() {
     return {
-      id: null
+      id: null,
+      product: { imagesUrl: [] }
     }
   },
   mounted() {
@@ -149,14 +155,18 @@ export default {
     this.getProductById(this.id)
   },
   methods: {
-    ...mapActions(productStore, ['getProductById'])
+    ...mapActions(productStore, ['getProductById']),
+    submit() {
+      console.log(this.product)
+    }
   },
   computed: {
-    ...mapState(productStore, ['product'])
+    ...mapState(productStore, ['productData'])
   },
   watch: {
-    product() {
-      this.product.imageUrl = this.product.image
+    productData() {
+      this.product = this.productData
+      this.product.imageUrl = this.productData.image
     }
   }
 }

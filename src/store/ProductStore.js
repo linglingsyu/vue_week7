@@ -5,7 +5,7 @@ export default defineStore('productStore', {
   getters: {
     isLoading: ({ Loading }) => Loading,
     products: ({ productList }) => productList,
-    product: ({ productById }) => productById
+    productData: ({ productById }) => productById
   },
   actions: {
     async getProductList() {
@@ -26,7 +26,6 @@ export default defineStore('productStore', {
         this.Loading = true
         const path = `/api/${api_path}/product/${id}`
         const res = await API.get(path)
-        console.log(res)
         this.productById = res.data.product
       } catch (error) {
         console.dir(error)
