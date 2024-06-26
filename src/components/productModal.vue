@@ -191,6 +191,7 @@ export default {
     const modal = this.$refs.modal
     this.modal = new Modal(modal)
   },
+  props: ['productData'],
   methods: {
     ...mapActions(productStore, ['upload', 'updateProduct']),
     show() {
@@ -220,6 +221,11 @@ export default {
     submit() {
       const data = this.product
       this.updateProduct('add', data)
+    }
+  },
+  watch: {
+    productData() {
+      this.product = this.productData
     }
   }
 }

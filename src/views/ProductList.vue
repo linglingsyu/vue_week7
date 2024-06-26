@@ -39,11 +39,13 @@
               {{ product.is_enabled ? '是' : '否' }}
             </td>
             <td width="200">
-              <router-link
+              <button
+                type="button"
                 class="btn btn-sm btn-outline-primary mx-1"
-                :to="'/product/' + product.id"
-                >編輯</router-link
+                @click="openModal(product)"
               >
+                編輯
+              </button>
               <button
                 type="button"
                 class="btn btn-danger btn-sm"
@@ -58,7 +60,7 @@
     </div>
   </div>
   <div class="position-relative"></div>
-  <productModal ref="Addmodal"></productModal>
+  <productModal ref="Addmodal" :productData="temData"></productModal>
 </template>
 <script>
 import Swal from 'sweetalert2'
@@ -68,6 +70,11 @@ import productModal from '@/components/productModal.vue'
 export default {
   mounted() {
     this.getProductList()
+  },
+  data() {
+    return {
+      temData: []
+    }
   },
   components: {
     productModal
@@ -94,6 +101,10 @@ export default {
         .then(() => {
           this.getProductList()
         })
+    },
+    openModal(product) {
+      this.temData = product
+      this.$refs.Addmodal.show()
     }
   },
   computed: {
