@@ -13,7 +13,9 @@
         不限
       </label>
     </div>
-    <div class="form-check" v-for="item in formTemplate" :key="item.label">
+    <div
+      class="form-check" v-for="item in formTemplate" :key="item.label"
+    >
       <label class="form-check-label">
         <input
           class="form-check-input"
@@ -27,11 +29,21 @@
     </div>
     <div class="row">
       <div class="col">
-        <input type="text" class="form-control" v-model="minValue" />
+        <input
+          type="text"
+          class="form-control"
+          v-model="minValue"
+          @input="checkboxValue = []"
+        />
       </div>
       <div class="w-auto">~</div>
       <div class="col">
-        <input type="text" class="form-control" v-model="maxValue" />
+        <input
+          type="text"
+          class="form-control"
+          v-model="maxValue"
+          @input="checkboxValue = []"
+        />
       </div>
     </div>
   </form>
@@ -98,22 +110,24 @@ const updateValue = (event) => {
     checkboxValue.value = arr
   } else {
     // 取消選取的狀態
-    if (
-      event.target.value < min.value.value ||
-      event.target.value > max.value.value
-    ) {
-      // 取消的為最大值或最小值 => 不做任何事
-    } else {
-      //  取消的為中間值，等同於此選取的值
-      checkboxValue.value = [checkValue]
+    if (min.value && max.value) {
+      if (
+        event.target.value < min.value.value ||
+        event.target.value > max.value.value
+      ) {
+        // 取消的為最大值或最小值 => 不做任何事
+      } else {
+        //  取消的為中間值，等同於此選取的值
+        checkboxValue.value = [checkValue]
+      }
     }
   }
 }
 
 // 當最大值或最小值改變時，更新minValue和maxValue
 watch([max, min], ([maxVal, minVal]) => {
-  minValue.value = minVal.min
-  maxValue.value = maxVal.max
+  minValue.value = minVal?.min ?? minValue.value
+  maxValue.value = maxVal?.max ?? maxValue.value
 })
 </script>
 
