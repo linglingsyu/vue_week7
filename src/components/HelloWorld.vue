@@ -8,13 +8,15 @@
           :true-value="true"
           :false-value="false"
           v-model="noLimit"
-          @change="checkboxValue = []"
+          @change="noLimitChangeHandler"
         />
         不限
       </label>
     </div>
     <div
-      class="form-check" v-for="item in formTemplate" :key="item.label"
+      class="form-check"
+      v-for="item in formTemplate"
+      :key="item.label"
     >
       <label class="form-check-label">
         <input
@@ -31,18 +33,18 @@
       <div class="col">
         <input
           type="text"
-          class="form-control"
+          class="form-control border"
           v-model="minValue"
-          @input="checkboxValue = []"
+          @input="updateValue"
         />
       </div>
       <div class="w-auto">~</div>
       <div class="col">
         <input
           type="text"
-          class="form-control"
+          class="form-control border"
           v-model="maxValue"
-          @input="checkboxValue = []"
+          @input="updateValue"
         />
       </div>
     </div>
@@ -50,7 +52,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { ref, computed } from 'vue'
 
 const noLimit = ref(false)
 const checkboxValue = ref([])
@@ -98,37 +100,53 @@ const max = computed(
 )
 
 const updateValue = (event) => {
-  const isChecked = event.target.checked // 點選的Element是否被選取
-  const checkValue = event.target.value // 點選的Element的值
-  noLimit.value = false
-  if (isChecked) {
-    // 被選取的狀態 補上其他範圍的值
-    const arr = []
-    for (let i = min.value.value; i <= max.value.value; i++) {
-      arr.push(i)
-    }
-    checkboxValue.value = arr
-  } else {
-    // 取消選取的狀態
-    if (min.value && max.value) {
-      if (
-        event.target.value < min.value.value ||
-        event.target.value > max.value.value
-      ) {
-        // 取消的為最大值或最小值 => 不做任何事
-      } else {
-        //  取消的為中間值，等同於此選取的值
-        checkboxValue.value = [checkValue]
+  const elementType = event.target.type
+  if (elementType === 'checkbox') {
+    const isChecked = event.target.checked // 點選的Element是否被選取
+    const checkValue = event.target.value // 點選的Element的值
+    noLimit.value = false
+    if (isChecked) {
+      // 被選取的狀態 補上其他範圍的值
+      const arr = []
+      for (let i = min.value.value; i <= max.value.value; i++) {
+        arr.push(i)
+      }
+      checkboxValue.value = arr
+    } else {
+      // 取消選取的狀態
+      if (min.value && max.value) {
+        if (
+          event.target.value < min.value.value ||
+          event.target.value > max.value.value
+        ) {
+          // 取消的為最大值或最小值 => 不做任何事
+        } else {
+          //  取消的為中間值，等同於此選取的值
+          checkboxValue.value = [checkValue]
+        }
       }
     }
+    minValue.value = min.value?.min || null
+    maxValue.value = max.value?.max || null
+  } else if (event.target.type === 'text') {
+    noLimit.value = false
+    checkboxValue.value = []
   }
 }
 
+
+
+const noLimitChangeHandler = () => {
+  checkboxValue.value = []
+  minValue.value = null
+  maxValue.value = null
+}
+
 // 當最大值或最小值改變時，更新minValue和maxValue
-watch([max, min], ([maxVal, minVal]) => {
-  minValue.value = minVal?.min ?? minValue.value
-  maxValue.value = maxVal?.max ?? maxValue.value
-})
+// watch([max, min], ([maxVal, minVal]) => {
+//   minValue.value = minVal.min
+//   maxValue.value = maxVal.max
+// })
 </script>
 
 <style scoped>
